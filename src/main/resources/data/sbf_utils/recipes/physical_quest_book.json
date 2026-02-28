@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "LCL",
+    "BQB",
+    "LCL"
+  ],
+  "key": {
+    "L": {
+      "item": "minecraft:leather"
+    },
+    "C": {
+      "item": "minecraft:compass"
+    },
+    "B": {
+      "item": "minecraft:book"
+    },
+    "Q": {
+      "item": "minecraft:feather"
+    }
+  },
+  "result": {
+    "item": "minecraft:writable_book",
+    "count": 1
+  }
+}
