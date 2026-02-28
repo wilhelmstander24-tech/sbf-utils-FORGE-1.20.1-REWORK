@@ -11,12 +11,14 @@ public final class SbfCommonConfig {
     public static final ForgeConfigSpec.ConfigValue<String> QUEST_BOOK_ITEM;
     public static final ForgeConfigSpec.ConfigValue<String> CLASS_BOOK_ITEM;
     public static final ForgeConfigSpec.ConfigValue<String> INVENTORY_QUEST_COMMAND;
+    public static final ForgeConfigSpec.ConfigValue<String> BOSS_LIST_COMMAND;
 
     public static final ForgeConfigSpec.BooleanValue ENABLE_STARTING_ITEMS;
     public static final ForgeConfigSpec.BooleanValue ENABLE_LAST_LOCATION_SPAWN_FIX;
     public static final ForgeConfigSpec.BooleanValue ENABLE_DUPLICATE_MOD_SCAN;
     public static final ForgeConfigSpec.BooleanValue ENABLE_GUI_OVERLAP_FIX;
     public static final ForgeConfigSpec.BooleanValue ENABLE_PARTICLE_SOFT_CAP;
+    public static final ForgeConfigSpec.BooleanValue ENABLE_BOSS_LIST_BUTTON;
 
     public static final ForgeConfigSpec.IntValue PARTICLE_SOFT_CAP;
     public static final ForgeConfigSpec.DoubleValue STAMINA_MAGIC_CORRELATION;
@@ -42,6 +44,9 @@ public final class SbfCommonConfig {
         ENABLE_PARTICLE_SOFT_CAP = builder
                 .comment("Cancel low-priority client particles when camera is in heavy scenes.")
                 .define("enableParticleSoftCap", true);
+        ENABLE_BOSS_LIST_BUTTON = builder
+                .comment("Inject a pause-menu button that opens your boss list UI via command.")
+                .define("enableBossListButton", true);
 
         PARTICLE_SOFT_CAP = builder
                 .comment("Approximate particle cap before cancelling ambient particles.")
@@ -70,6 +75,10 @@ public final class SbfCommonConfig {
         INVENTORY_QUEST_COMMAND = builder
                 .comment("Client command sent when quest button is pressed in the inventory screen.")
                 .define("inventoryQuestCommand", "ftbquests quests");
+
+        BOSS_LIST_COMMAND = builder
+                .comment("Client command sent when the pause-menu boss list button is pressed.")
+                .define("bossListCommand", "ftbquests quests");
 
         builder.pop();
 

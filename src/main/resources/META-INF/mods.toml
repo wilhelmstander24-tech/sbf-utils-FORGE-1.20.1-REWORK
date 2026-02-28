@@ -69,3 +69,17 @@ mandatory=false
 versionRange="[0,)"
 ordering="AFTER"
 side="BOTH"
+
+[[dependencies.${mod_id}]]
+modId="sereneseasons"
+mandatory=false
+versionRange="[0,)"
+ordering="AFTER"
+side="BOTH"
+
+[[dependencies.${mod_id}]]
+modId="seasonhud"
+mandatory=false
+versionRange="[0,)"
+ordering="AFTER"
+side="CLIENT"
