@@ -180,34 +180,37 @@ dependencies {
     // This maps to ./libs/coolmod-${mc_version}-${coolmod_version}.jar
     // The group id is ignored when searching -- in this case, it is "blank"
     // implementation fg.deobf("blank:coolmod-${mc_version}:${coolmod_version}")
-    // End Remastered integration (configure the exact artifact in gradle.properties)
-    [
-            'endremastered_dependency',
-            'desertification_dependency',
-            'witherstorm_dependency',
-            'iceandfire_dependency',
-            'celestisynth_dependency',
-            'companions_dependency',
-            'dungeons_and_combat_dependency',
-            'cataclysm_dependency',
-            'mowziesmobs_dependency',
-            'enderman_overhaul_dependency',
-            'aquamirae_dependency',
-            'alexs_caves_dependency',
-            'lifesteal_dependency',
-            'scarlet_king_dependency',
-            'sculk_sickness_dependency',
-            'call_of_yucatan_dependency',
-            'dungeons_now_loading_dependency',
-            'to_magic_n_extras_dependency',
-            'iron_spells_n_spellbooks_dependency'
-    ].each { propertyName ->
-        if (project.hasProperty(propertyName) && project.property(propertyName).toString().trim()) {
-            String dependencyCoordinate = project.property(propertyName).toString().trim()
+    // Optional integration dependencies (declare in gradle.properties using full Maven coordinates)
+    def addOptionalIntegration = { String propertyName ->
+        String dependencyCoordinate = project.findProperty(propertyName)?.toString()?.trim()
+        if (dependencyCoordinate) {
             compileOnly fg.deobf(dependencyCoordinate)
             runtimeOnly fg.deobf(dependencyCoordinate)
         }
     }
+
+    addOptionalIntegration('endremastered_dependency')
+    addOptionalIntegration('desertification_dependency')
+    addOptionalIntegration('witherstorm_dependency')
+    addOptionalIntegration('iceandfire_dependency')
+    addOptionalIntegration('celestisynth_dependency')
+    addOptionalIntegration('companions_dependency')
+    addOptionalIntegration('dungeons_and_combat_dependency')
+    addOptionalIntegration('cataclysm_dependency')
+    addOptionalIntegration('mowziesmobs_dependency')
+    addOptionalIntegration('enderman_overhaul_dependency')
+    addOptionalIntegration('aquamirae_dependency')
+    addOptionalIntegration('alexs_caves_dependency')
+    addOptionalIntegration('lifesteal_dependency')
+    addOptionalIntegration('scarlet_king_dependency')
+    addOptionalIntegration('sculk_sickness_dependency')
+    addOptionalIntegration('call_of_yucatan_dependency')
+    addOptionalIntegration('dungeons_now_loading_dependency')
+    addOptionalIntegration('to_magic_n_extras_dependency')
+    addOptionalIntegration('iron_spells_n_spellbooks_dependency')
+    addOptionalIntegration('serene_seasons_dependency')
+    addOptionalIntegration('seasonshud_dependency')
+
 
 
     // For more info:

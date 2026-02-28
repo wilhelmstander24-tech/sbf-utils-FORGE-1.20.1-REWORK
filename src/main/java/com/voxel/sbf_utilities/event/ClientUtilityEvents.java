@@ -9,12 +9,17 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderGuiEvent;
+import net.minecraftforge.client.event.RenderGuiOverlayEvent;
 import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.client.event.ViewportEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +27,7 @@ import java.util.List;
 @Mod.EventBusSubscriber(modid = SBF_Utilities_class.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public final class ClientUtilityEvents {
     private static int particleCounter = 0;
-
+    private static final ResourceLocation SERENE_CALENDAR_ITEM_ID = new ResourceLocation("sereneseasons", "calendar");
     private ClientUtilityEvents() {
     }
 
@@ -94,6 +99,39 @@ public final class ClientUtilityEvents {
         event.getGuiGraphics().fill(statusRect.x - 2, statusRect.y - 2, statusRect.x + statusRect.w + 2, statusRect.y + statusRect.h + 2, 0x66000000);
         event.getGuiGraphics().drawString(mc.font, "SBF HUD auto-layout", statusRect.x, statusRect.y, 0xFFCC66, false);
     }
+
+    @SubscribeEvent
+    public static void onRenderOverlayPre(RenderGuiOverlayEvent.Pre event) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player == null) {
+            return;
+        }
+
+        if (!ModList.get().isLoaded("sereneseasons") && !ModList.get().isLoaded("seasonhud")) {
+            return;
+        }
+
+        if (isHoldingCalendar(mc.player.getMainHandItem()) || isHoldingCalendar(mc.player.getOffhandItem())) {
+            return;
+        }
+
+        ResourceLocation overlayId = event.getOverlay().id();
+        if (overlayId == null) {
+            return;
+        }
+
+        String namespace = overlayId.getNamespace();
+        String path = overlayId.getPath();
+        if ("seasonhud".equals(namespace) || "sereneseasons".equals(namespace) || path.contains("season")) {
+            event.setCanceled(true);
+        }
+    }
+
+    private static boolean isHoldingCalendar(ItemStack stack) {
+        ResourceLocation key = ForgeRegistries.ITEMS.getKey(stack.getItem());
+        return SERENE_CALENDAR_ITEM_ID.equals(key);
+    }
+
 
     private static UiRect resolveForInventory(int x, int y, int w, int h, InventoryScreen screen, List<UiRect> occupied) {
         List<UiRect> candidates = List.of(

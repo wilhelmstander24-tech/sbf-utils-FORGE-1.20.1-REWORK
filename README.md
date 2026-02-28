@@ -48,3 +48,23 @@ Key settings:
 - Added `data/sbf_utils/kubejs/endremastered_eye_overrides.js` to fully override End Remastered eye recipes for Black, Lost, Old, Cold, Rogue, Cryptic, Magical, Corrupted, and Cursed eyes using your provided ingredient lists.
 - The script removes original recipes and re-adds shapeless overrides (including alternative ingredient support for Rogue Eye).
 - Verify/adjust item IDs in the script to match exact mod IDs in your pack if any differ by namespace.
+
+
+## Structure Generation Override System
+
+A new server config file is available at `config/sbf_utils-structure-overrides.toml` with controls for structure-count manipulation:
+
+- `enableStructureOverrides`: enables structure count enforcement.
+- `whitelistedAdminUuids`: UUID whitelist for `/sbfstructure` config access commands.
+- `structureCountOverrides`: base Minecraft caps, format `namespace:structure=count`.
+- `applyOverridesToDependencyStructures`: include dependency structure caps.
+- `dependencyStructureCountOverrides`: dependency caps using the same format.
+- `enableStructureReplacements`: allow replacement after cap is reached.
+- `structureReplacements`: map old to custom structures, format `old_namespace:structure=new_namespace:custom_structure`.
+
+Admin command:
+- `/sbfstructure status`
+- `/sbfstructure setcap <namespace:structure=count>`
+- `/sbfstructure reload (resets runtime counters)`
+
+This lets pack maintainers cap total generated structures and optionally swap capped structures with custom built structure IDs supplied by datapacks/mods.
