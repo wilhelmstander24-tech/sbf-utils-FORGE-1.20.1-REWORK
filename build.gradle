@@ -181,37 +181,48 @@ dependencies {
     // The group id is ignored when searching -- in this case, it is "blank"
     // implementation fg.deobf("blank:coolmod-${mc_version}:${coolmod_version}")
     // Optional integration dependencies (declare in gradle.properties using full Maven coordinates)
+    boolean enableOptionalIntegrations = (project.findProperty('enable_optional_integrations') ?: 'false').toString().toBoolean()
     def addOptionalIntegration = { String propertyName ->
         String dependencyCoordinate = project.findProperty(propertyName)?.toString()?.trim()
-        if (dependencyCoordinate) {
-            compileOnly fg.deobf(dependencyCoordinate)
-            runtimeOnly fg.deobf(dependencyCoordinate)
+        if (!dependencyCoordinate) {
+            return
         }
+
+        boolean validCurse = !dependencyCoordinate.startsWith('curse.maven:') ||
+                (dependencyCoordinate ==~ /curse\.maven:[^:]+-\d+:.+/)
+        if (!validCurse) {
+            logger.warn("[SBF Utils] Skipping optional dependency '{}' because '{}' is not a valid CurseMaven coordinate. Expected curse.maven:<slug>-<projectId>:<fileId|+>", propertyName, dependencyCoordinate)
+            return
+        }
+
+        runtimeOnly fg.deobf(dependencyCoordinate)
     }
 
-    addOptionalIntegration('endremastered_dependency')
-    addOptionalIntegration('desertification_dependency')
-    addOptionalIntegration('witherstorm_dependency')
-    addOptionalIntegration('iceandfire_dependency')
-    addOptionalIntegration('celestisynth_dependency')
-    addOptionalIntegration('companions_dependency')
-    addOptionalIntegration('dungeons_and_combat_dependency')
-    addOptionalIntegration('cataclysm_dependency')
-    addOptionalIntegration('mowziesmobs_dependency')
-    addOptionalIntegration('enderman_overhaul_dependency')
-    addOptionalIntegration('aquamirae_dependency')
-    addOptionalIntegration('alexs_caves_dependency')
-    addOptionalIntegration('lifesteal_dependency')
-    addOptionalIntegration('scarlet_king_dependency')
-    addOptionalIntegration('sculk_sickness_dependency')
-    addOptionalIntegration('call_of_yucatan_dependency')
-    addOptionalIntegration('dungeons_now_loading_dependency')
-    addOptionalIntegration('to_magic_n_extras_dependency')
-    addOptionalIntegration('iron_spells_n_spellbooks_dependency')
-    addOptionalIntegration('serene_seasons_dependency')
-    addOptionalIntegration('seasonshud_dependency')
-
-
+    if (enableOptionalIntegrations) {
+        addOptionalIntegration('endremastered_dependency')
+        addOptionalIntegration('desertification_dependency')
+        addOptionalIntegration('witherstorm_dependency')
+        addOptionalIntegration('iceandfire_dependency')
+        addOptionalIntegration('celestisynth_dependency')
+        addOptionalIntegration('companions_dependency')
+        addOptionalIntegration('dungeons_and_combat_dependency')
+        addOptionalIntegration('cataclysm_dependency')
+        addOptionalIntegration('mowziesmobs_dependency')
+        addOptionalIntegration('enderman_overhaul_dependency')
+        addOptionalIntegration('aquamirae_dependency')
+        addOptionalIntegration('alexs_caves_dependency')
+        addOptionalIntegration('lifesteal_dependency')
+        addOptionalIntegration('scarlet_king_dependency')
+        addOptionalIntegration('sculk_sickness_dependency')
+        addOptionalIntegration('call_of_yucatan_dependency')
+        addOptionalIntegration('dungeons_now_loading_dependency')
+        addOptionalIntegration('to_magic_n_extras_dependency')
+        addOptionalIntegration('iron_spells_n_spellbooks_dependency')
+        addOptionalIntegration('serene_seasons_dependency')
+        addOptionalIntegration('seasonshud_dependency')
+    } else {
+        logger.lifecycle("[SBF Utils] Optional mod integrations are disabled. Set enable_optional_integrations=true in gradle.properties to enable them.")
+    }
 
     // For more info:
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
@@ -275,4 +286,20 @@ publishing {
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
+}
+
+def runDirs = ['run', 'run/client', 'run/server', 'run/gametest', 'run/data']
+
+tasks.register('purgeDuplicateLocalModJars', Delete) {
+    description = 'Removes locally built sbf_utils jars from run mods folders to avoid JPMS split-package module collisions.'
+    runDirs.each { dirName ->
+        delete fileTree(dirName) {
+            include 'mods/sbf_utils-*.jar'
+            include "mods/${mod_id}-*.jar"
+        }
+    }
+}
+
+tasks.matching { it.name in ['runClient', 'runServer', 'runGameTestServer', 'runData'] }.configureEach {
+    dependsOn tasks.named('purgeDuplicateLocalModJars')
 }
